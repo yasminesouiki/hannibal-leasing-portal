@@ -1,0 +1,33 @@
+:root {
+  /* Couleurs Hannibal Lease */
+  --color-primary: #7a1f2b;
+  --color-primary-dark: #5e1620;
+  --color-primary-light: #a5424d;
+
+  --color-bg: #efeded;
+  --color-white: #ffffff;
+
+  --color-text: #2b2b2b;
+  --color-text-muted: #6b6b6b;
+
+  --color-error: #b3261e;
+  --color-success: #2e7d32;
+  --color-border: #ddd8d4;
+
+  --font-main: "Segoe UI", Arial, sans-serif;
+
+  --radius-md: 8px;
+  --radius-sm: 4px;
+  --shadow-card: 0 4px 20px rgba(0, 0, 0, 0.08);
+}
+
+* {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  font-family: var(--font-main);
+  background-color: var(--color-bg);
+  color: var(--color-text);
+}
