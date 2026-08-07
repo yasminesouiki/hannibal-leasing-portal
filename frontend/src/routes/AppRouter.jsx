@@ -4,8 +4,11 @@ import AdminAuthPage from "../pages/AdminAuthPage";
 import RhAuthPage from "../pages/RhAuthPage";
 import AdminLayout from "../components/AdminLayout";
 import AdminUsersPage from "../pages/AdminUsersPage";
-import AdminSettingsPage from "../pages/AdminSettingsPage";
+import AdminExpensesPage from "../pages/AdminExpensesPage";
 import AdminMessageriePage from "../pages/AdminMessageriePage";
+import UserLayout from "../components/UserLayout";
+import UserExpensesPage from "../pages/UserExpensesPage";
+import SettingsPage from "../pages/SettingsPage";
 import { useAuth } from "../hooks/useAuth";
 
 const ProtectedRoute = ({ children, allowedRoles }) => {
@@ -20,6 +23,15 @@ const ProtectedRoute = ({ children, allowedRoles }) => {
   return children;
 };
 
+// Redirige selon le rôle : les agents (user) vont vers leurs notes de frais,
+// les RH n'ont pas encore d'espace dédié.
+const DashboardRedirect = () => {
+  const { role } = useAuth();
+
+  if (role === "user") return <Navigate to="/user/expenses" replace />;
+  return <div>Page RH </div>;
+};
+
 const AppRouter = () => {
   return (
     <BrowserRouter>
@@ -32,10 +44,23 @@ const AppRouter = () => {
           path="/dashboard"
           element={
             <ProtectedRoute allowedRoles={["user", "rh"]}>
-              <div>Page user </div>
+              <DashboardRedirect />
             </ProtectedRoute>
           }
         />
+
+        <Route
+          path="/user"
+          element={
+            <ProtectedRoute allowedRoles={["user"]}>
+              <UserLayout />
+            </ProtectedRoute>
+          }
+        >
+          <Route index element={<Navigate to="/user/expenses" replace />} />
+          <Route path="expenses" element={<UserExpensesPage />} />
+          <Route path="settings" element={<SettingsPage />} />
+        </Route>
 
         <Route
           path="/admin"
@@ -48,7 +73,9 @@ const AppRouter = () => {
           <Route path="dashboard" element={<Navigate to="/admin/users/pending" replace />} />
           <Route path="users" element={<Navigate to="/admin/users/pending" replace />} />
           <Route path="users/:status" element={<AdminUsersPage />} />
-          <Route path="settings" element={<AdminSettingsPage />} />
+          <Route path="expenses" element={<Navigate to="/admin/expenses/pending" replace />} />
+          <Route path="expenses/:status" element={<AdminExpensesPage />} />
+          <Route path="settings" element={<SettingsPage />} />
           <Route path="messagerie" element={<AdminMessageriePage />} />
         </Route>
 

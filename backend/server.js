@@ -4,6 +4,8 @@ const path = require("path");
 const express = require("express");
 const cors = require("cors");
 const authRoutes = require("./src/routes/authRoutes");
+const budgetRoutes = require("./src/routes/budgetRoutes");
+const expenseRoutes = require("./src/routes/expenseRoutes");
 const initDb = require("./src/data/initDb");
 
 const app = express();
@@ -13,6 +15,8 @@ app.use(express.json());
 app.use("/uploads", express.static(path.join(__dirname, "uploads")));
 
 app.use("/api/auth", authRoutes);
+app.use("/api/budget", budgetRoutes);
+app.use("/api/expenses", expenseRoutes);
 
 const PORT = process.env.PORT || 5000;
 

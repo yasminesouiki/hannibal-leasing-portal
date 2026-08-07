@@ -33,6 +33,36 @@ const initDb = async () => {
   await addColumnIfMissing("photo", "VARCHAR(255)");
   await addColumnIfMissing("status", "ENUM('pending', 'accepted', 'rejected') NOT NULL DEFAULT 'accepted'");
 
+  // Budget global des notes de frais (une seule ligne, id = 1)
+  await pool.query(`
+    CREATE TABLE IF NOT EXISTS budget (
+      id INT PRIMARY KEY,
+      montant DECIMAL(10,2) NOT NULL DEFAULT 0,
+      updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
+    )
+  `);
+  const [budgetRows] = await pool.query("SELECT id FROM budget WHERE id = 1");
+  if (budgetRows.length === 0) {
+    await pool.query("INSERT INTO budget (id, montant) VALUES (1, 0)");
+  }
+
+  // Notes de frais : ordres de mission et frais divers (les champs propres à
+  // chaque type sont stockés dans la colonne JSON `details`)
+  await pool.query(`
+    CREATE TABLE IF NOT EXISTS expense_requests (
+      id INT AUTO_INCREMENT PRIMARY KEY,
+      user_id INT NOT NULL,
+      type ENUM('mission', 'divers') NOT NULL,
+      montant DECIMAL(10,2) NOT NULL,
+      details JSON NOT NULL,
+      justificatif VARCHAR(255),
+      status ENUM('pending', 'accepted', 'rejected') NOT NULL DEFAULT 'pending',
+      created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+      decided_at TIMESTAMP NULL,
+      FOREIGN KEY (user_id) REFERENCES accounts(id)
+    )
+  `);
+
   await seedAccount(process.env.ADMIN_EMAIL, process.env.ADMIN_PASSWORD, "admin");
   await seedAccount(process.env.RH_EMAIL, process.env.RH_PASSWORD, "rh");
 };

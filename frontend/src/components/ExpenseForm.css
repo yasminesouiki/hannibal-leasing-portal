@@ -1,0 +1,34 @@
+.expense-form {
+  max-width: 560px;
+}
+
+.expense-form-row {
+  display: flex;
+  gap: 16px;
+}
+
+.expense-form-row .form-group {
+  flex: 1;
+  min-width: 0;
+}
+
+.expense-form-subtitle {
+  margin: 24px 0 4px;
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--color-text-muted);
+  text-transform: uppercase;
+  letter-spacing: 0.03em;
+}
+
+.expense-form-frais-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(110px, 1fr));
+  gap: 12px;
+}
+
+.expense-form-total {
+  margin-top: 12px;
+  font-weight: 700;
+  color: var(--color-primary);
+}

@@ -1,0 +1,32 @@
+.expense-details {
+  padding: 16px 0 4px;
+  border-top: 1px solid var(--color-border);
+  margin-top: 12px;
+}
+
+.expense-details-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+  gap: 10px 20px;
+  margin: 0;
+}
+
+.expense-details-item dt {
+  font-size: 12px;
+  color: var(--color-text-muted);
+  margin-bottom: 2px;
+}
+
+.expense-details-item dd {
+  margin: 0;
+  font-size: 14px;
+  color: var(--color-text);
+}
+
+.expense-details-file {
+  display: inline-block;
+  margin-top: 12px;
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--color-primary);
+}

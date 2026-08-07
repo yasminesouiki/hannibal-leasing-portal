@@ -1,0 +1,22 @@
+.expense-status-badge {
+  font-size: 12px;
+  font-weight: 600;
+  padding: 4px 10px;
+  border-radius: 999px;
+  white-space: nowrap;
+}
+
+.expense-status-pending {
+  background-color: #fff8e1;
+  color: #b26a00;
+}
+
+.expense-status-accepted {
+  background-color: #e8f5e9;
+  color: var(--color-success);
+}
+
+.expense-status-rejected {
+  background-color: #fdecea;
+  color: var(--color-error);
+}

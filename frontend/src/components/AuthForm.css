@@ -98,6 +98,16 @@
   font-size: 13px;
 }
 
+.global-success {
+  background: #e8f5e9;
+  color: var(--color-success);
+  border: 1px solid #c8e6c9;
+  border-radius: var(--radius-sm);
+  padding: 10px 12px;
+  font-size: 13px;
+  margin-bottom: 8px;
+}
+
 .admin-link {
   margin-top: 1px;
   padding-top: 19px;

@@ -2,14 +2,14 @@ import { useEffect, useRef, useState } from "react";
 import { getMe, updateProfile, changePassword, getPhotoUrl } from "../services/authService";
 import { useAuth } from "../hooks/useAuth";
 import "../components/AuthForm.css";
-import "./AdminSettingsPage.css";
+import "./SettingsPage.css";
 
 const TABS = [
   { key: "personal", label: "Données personnelles" },
   { key: "security", label: "Sécurité" },
 ];
 
-const AdminSettingsPage = () => {
+const SettingsPage = () => {
   const { token, login } = useAuth();
   const fileInputRef = useRef(null);
 
@@ -268,4 +268,4 @@ const AdminSettingsPage = () => {
   );
 };
 
-export default AdminSettingsPage;
+export default SettingsPage;
