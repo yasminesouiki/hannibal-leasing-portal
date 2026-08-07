@@ -1,6 +1,8 @@
 import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
 import UserAuthPage from "../pages/UserAuthPage";
 import AdminAuthPage from "../pages/AdminAuthPage";
+import RhAuthPage from "../pages/RhAuthPage";
+import AdminPendingUsers from "../components/AdminPendingUsers";
 import { useAuth } from "../hooks/useAuth";
 
 const ProtectedRoute = ({ children, allowedRoles }) => {
@@ -21,6 +23,7 @@ const AppRouter = () => {
       <Routes>
         <Route path="/login" element={<UserAuthPage />} />
         <Route path="/admin/login" element={<AdminAuthPage />} />
+        <Route path="/rh/login" element={<RhAuthPage />} />
 
         <Route
           path="/dashboard"
@@ -34,7 +37,7 @@ const AppRouter = () => {
           path="/admin/dashboard"
           element={
             <ProtectedRoute allowedRoles={["admin"]}>
-              <div>Page admin </div>
+              <AdminPendingUsers />
             </ProtectedRoute>
           }
         />

@@ -14,6 +14,7 @@ const SignupUserForm = ({ onSwitchToLogin }) => {
     email: "",
     password: "",
     confirmPassword: "",
+    poste: "",
   });
   const [errors, setErrors] = useState({});
   const [globalError, setGlobalError] = useState("");
@@ -34,6 +35,7 @@ const SignupUserForm = ({ onSwitchToLogin }) => {
         "8 caractères min., une majuscule et un chiffre";
     if (!passwordsMatch(form.password, form.confirmPassword))
       newErrors.confirmPassword = "Les mots de passe ne correspondent pas";
+    if (!form.poste) newErrors.poste = "Poste requis";
 
     setErrors(newErrors);
     return Object.keys(newErrors).length === 0;
@@ -134,6 +136,18 @@ const SignupUserForm = ({ onSwitchToLogin }) => {
         {errors.confirmPassword && (
           <span className="form-error">{errors.confirmPassword}</span>
         )}
+      </div>
+
+      <div className="form-group">
+        <label className="form-label" htmlFor="poste">Poste à occuper</label>
+        <input
+          id="poste"
+          className="form-input"
+          value={form.poste}
+          onChange={handleChange("poste")}
+          placeholder="Ex: Comptable, Commercial..."
+        />
+        {errors.poste && <span className="form-error">{errors.poste}</span>}
       </div>
 
       <button type="submit" className="form-button" disabled={loading}>

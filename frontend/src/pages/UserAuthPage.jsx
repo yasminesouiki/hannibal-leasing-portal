@@ -22,6 +22,10 @@ const UserAuthPage = () => {
         <Link to="/admin/login" className="form-footer-link">
           Espace administrateur
         </Link>
+        <br />
+        <Link to="/rh/login" className="form-footer-link">
+          Espace ressources humaines
+        </Link>
       </p>
     </AuthLayout>
   );
