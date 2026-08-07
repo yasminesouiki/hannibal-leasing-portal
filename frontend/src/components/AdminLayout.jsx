@@ -1,5 +1,6 @@
 import { NavLink, Outlet, useNavigate } from "react-router-dom";
 import { useAuth } from "../hooks/useAuth";
+import logo from "../assets/logo-lease.png";
 import "./AdminLayout.css";
 
 const AdminLayout = () => {
@@ -17,7 +18,10 @@ const AdminLayout = () => {
   return (
     <div className="admin-layout">
       <aside className="admin-sidebar">
-        <div className="admin-sidebar-brand">Hannibal Lease</div>
+        <div className="admin-sidebar-brand">
+          <img src={logo} alt="Hannibal Lease" className="admin-sidebar-logo" />
+          <span>Hannibal Lease</span>
+        </div>
 
         <nav className="admin-nav">
           <NavLink to="/admin/users" className={navLinkClass}>

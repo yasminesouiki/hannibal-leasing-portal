@@ -1,6 +1,9 @@
 import axios from "axios";
 
-const API_URL = "http://localhost:5000/api/auth";
+const SERVER_URL = "http://localhost:5000";
+const API_URL = `${SERVER_URL}/api/auth`;
+
+export const getPhotoUrl = (photo) => (photo ? `${SERVER_URL}${photo}` : null);
 
 // ---- USER ----
 
@@ -66,12 +69,16 @@ export const getMe = async () => {
   return response.data; // { user }
 };
 
-export const updateProfile = async ({ nom, prenom, email }) => {
-  const response = await axios.put(
-    `${API_URL}/profile`,
-    { nom, prenom, email },
-    authHeader()
-  );
+export const updateProfile = async ({ nom, prenom, email, photoFile }) => {
+  const formData = new FormData();
+  formData.append("nom", nom);
+  formData.append("prenom", prenom);
+  formData.append("email", email);
+  if (photoFile) {
+    formData.append("photo", photoFile);
+  }
+
+  const response = await axios.put(`${API_URL}/profile`, formData, authHeader());
   return response.data; // { user }
 };
 
