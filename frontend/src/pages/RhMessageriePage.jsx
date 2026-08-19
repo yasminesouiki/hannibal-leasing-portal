@@ -1,10 +1,10 @@
 import Messagerie from "../components/Messagerie";
 
-const AdminMessageriePage = () => (
+const RhMessageriePage = () => (
   <div>
     <h2>Messagerie</h2>
     <Messagerie />
   </div>
 );
 
-export default AdminMessageriePage;
+export default RhMessageriePage;

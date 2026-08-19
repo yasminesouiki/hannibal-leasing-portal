@@ -32,7 +32,7 @@ const UserExpensesPage = () => {
     <div className="user-expenses-page">
       <h2>Notes de frais</h2>
 
-      <BudgetBar />
+      <BudgetBar mine />
 
       <div className="user-expenses-tabs">
         {SECTIONS.map((tab) => (

@@ -10,12 +10,19 @@ const TABS = [
 ];
 
 const SettingsPage = () => {
-  const { token, login } = useAuth();
+  const { token, login, role } = useAuth();
   const fileInputRef = useRef(null);
 
   const [activeTab, setActiveTab] = useState("personal");
 
-  const [profileForm, setProfileForm] = useState({ nom: "", prenom: "", email: "" });
+  const [profileForm, setProfileForm] = useState({
+    nom: "",
+    prenom: "",
+    email: "",
+    telephone: "",
+    lieu: "",
+    poste: "",
+  });
   const [photoFile, setPhotoFile] = useState(null);
   const [photoPreview, setPhotoPreview] = useState(null);
   const [profileLoading, setProfileLoading] = useState(true);
@@ -40,6 +47,9 @@ const SettingsPage = () => {
         nom: data.user.nom || "",
         prenom: data.user.prenom || "",
         email: data.user.email || "",
+        telephone: data.user.telephone || "",
+        lieu: data.user.lieu || "",
+        poste: data.user.poste || "",
       });
       setPhotoPreview(getPhotoUrl(data.user.photo));
     } catch {
@@ -207,6 +217,41 @@ const SettingsPage = () => {
                   onChange={handleProfileChange}
                 />
               </div>
+
+              <div className="form-group">
+                <label className="form-label" htmlFor="telephone">Téléphone</label>
+                <input
+                  id="telephone"
+                  name="telephone"
+                  className="form-input"
+                  value={profileForm.telephone}
+                  onChange={handleProfileChange}
+                />
+              </div>
+
+              <div className="form-group">
+                <label className="form-label" htmlFor="lieu">Lieu</label>
+                <input
+                  id="lieu"
+                  name="lieu"
+                  className="form-input"
+                  value={profileForm.lieu}
+                  onChange={handleProfileChange}
+                />
+              </div>
+
+              {role === "user" && (
+                <div className="form-group">
+                  <label className="form-label" htmlFor="poste">Poste occupé</label>
+                  <input
+                    id="poste"
+                    name="poste"
+                    className="form-input"
+                    value={profileForm.poste}
+                    onChange={handleProfileChange}
+                  />
+                </div>
+              )}
 
               <button type="submit" className="form-button" disabled={profileSaving}>
                 {profileSaving ? "Enregistrement..." : "Enregistrer"}

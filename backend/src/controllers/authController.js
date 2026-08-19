@@ -139,6 +139,18 @@ const updateUserStatus = async (req, res) => {
     return res.status(400).json({ message: "Statut invalide" });
   }
 
+  if (status === "accepted") {
+    const [budgetRows] = await pool.query("SELECT montant FROM budget WHERE id = 1");
+    const [result] = await pool.query(
+      "UPDATE accounts SET status = ?, budget_restant = ? WHERE id = ? AND role = 'user'",
+      [status, budgetRows[0]?.montant ?? 0, id]
+    );
+    if (result.affectedRows === 0) {
+      return res.status(404).json({ message: "Utilisateur introuvable" });
+    }
+    return res.json({ message: "Statut mis à jour" });
+  }
+
   const [result] = await pool.query(
     "UPDATE accounts SET status = ? WHERE id = ? AND role = 'user'",
     [status, id]
@@ -154,7 +166,7 @@ const updateUserStatus = async (req, res) => {
 
 const getMe = async (req, res) => {
   const [rows] = await pool.query(
-    "SELECT id, nom, prenom, email, poste, photo, role FROM accounts WHERE id = ?",
+    "SELECT id, nom, prenom, email, poste, telephone, lieu, photo, role FROM accounts WHERE id = ?",
     [req.auth.id]
   );
   if (rows.length === 0) {
@@ -164,7 +176,7 @@ const getMe = async (req, res) => {
 };
 
 const updateProfile = async (req, res) => {
-  const { nom, prenom, email } = req.body;
+  const { nom, prenom, email, telephone, lieu, poste } = req.body;
   const photo = req.file ? `/uploads/${req.file.filename}` : null;
 
   const fields = [];
@@ -172,6 +184,9 @@ const updateProfile = async (req, res) => {
   if (nom) { fields.push("nom = ?"); values.push(nom); }
   if (prenom) { fields.push("prenom = ?"); values.push(prenom); }
   if (email) { fields.push("email = ?"); values.push(email); }
+  if (telephone !== undefined) { fields.push("telephone = ?"); values.push(telephone); }
+  if (lieu !== undefined) { fields.push("lieu = ?"); values.push(lieu); }
+  if (poste !== undefined && req.auth.role === "user") { fields.push("poste = ?"); values.push(poste); }
   if (photo) { fields.push("photo = ?"); values.push(photo); }
 
   if (fields.length === 0) {
@@ -182,7 +197,7 @@ const updateProfile = async (req, res) => {
   await pool.query(`UPDATE accounts SET ${fields.join(", ")} WHERE id = ?`, values);
 
   const [rows] = await pool.query(
-    "SELECT id, nom, prenom, email, poste, photo, role FROM accounts WHERE id = ?",
+    "SELECT id, nom, prenom, email, poste, telephone, lieu, photo, role FROM accounts WHERE id = ?",
     [req.auth.id]
   );
   res.json({ user: rows[0] });

@@ -16,9 +16,9 @@ const requireAuth = (req, res, next) => {
   }
 };
 
-// À utiliser après requireAuth : bloque l'accès si le rôle ne correspond pas
-const requireRole = (role) => (req, res, next) => {
-  if (req.auth.role !== role) {
+// À utiliser après requireAuth : bloque l'accès si le rôle ne fait pas partie de ceux autorisés
+const requireRole = (...roles) => (req, res, next) => {
+  if (!roles.includes(req.auth.role)) {
     return res.status(403).json({ message: "Accès refusé" });
   }
   next();

@@ -13,7 +13,7 @@ const router = express.Router();
 
 router.post("/", requireAuth, upload.single("justificatif"), createExpense);
 router.get("/mine", requireAuth, listMyExpenses);
-router.get("/", requireAuth, requireRole("admin"), listExpenses);
+router.get("/", requireAuth, requireRole("admin", "rh"), listExpenses);
 router.patch("/:id/status", requireAuth, requireRole("admin"), updateExpenseStatus);
 router.get("/:id", requireAuth, getExpenseById);
 

@@ -1,10 +1,12 @@
 import { useEffect, useState } from "react";
-import { getBudget, updateBudget } from "../services/authService";
+import { getBudget, getMyBudget, updateBudget } from "../services/authService";
 import "./BudgetBar.css";
 
-// Barre de budget global des notes de frais. Le crayon d'édition n'est
+// Barre de budget. Par défaut affiche le montant de référence (identique
+// pour tous les agents, fixé par l'admin). Avec `mine`, affiche le budget
+// individuel restant de l'agent connecté. Le crayon d'édition n'est
 // affiché que côté admin (prop `editable`).
-const BudgetBar = ({ editable = false }) => {
+const BudgetBar = ({ editable = false, mine = false }) => {
   const [montant, setMontant] = useState(null);
   const [editing, setEditing] = useState(false);
   const [value, setValue] = useState("");
@@ -13,7 +15,7 @@ const BudgetBar = ({ editable = false }) => {
 
   const loadBudget = async () => {
     try {
-      const data = await getBudget();
+      const data = mine ? await getMyBudget() : await getBudget();
       setMontant(Number(data.montant));
     } catch {
       setError("Impossible de charger le budget");
@@ -56,7 +58,7 @@ const BudgetBar = ({ editable = false }) => {
 
   return (
     <div className="budget-bar">
-      <span className="budget-bar-label">Budget disponible</span>
+      <span className="budget-bar-label">{mine ? "Mon budget disponible" : "Budget alloué par agent"}</span>
 
       {editing ? (
         <div className="budget-bar-edit">

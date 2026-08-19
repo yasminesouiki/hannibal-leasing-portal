@@ -32,8 +32,12 @@ const initDb = async () => {
   // Ajoute les colonnes si la table existait déjà avant cette évolution
   await addColumnIfMissing("photo", "VARCHAR(255)");
   await addColumnIfMissing("status", "ENUM('pending', 'accepted', 'rejected') NOT NULL DEFAULT 'accepted'");
+  await addColumnIfMissing("telephone", "VARCHAR(30)");
+  await addColumnIfMissing("lieu", "VARCHAR(150)");
+  const budgetRestantAdded = await addColumnIfMissing("budget_restant", "DECIMAL(10,2) NOT NULL DEFAULT 0");
 
-  // Budget global des notes de frais (une seule ligne, id = 1)
+  // Budget de référence : montant fixé par l'admin, appliqué comme allocation
+  // individuelle à chaque agent (une seule ligne, id = 1)
   await pool.query(`
     CREATE TABLE IF NOT EXISTS budget (
       id INT PRIMARY KEY,
@@ -41,9 +45,19 @@ const initDb = async () => {
       updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
     )
   `);
-  const [budgetRows] = await pool.query("SELECT id FROM budget WHERE id = 1");
+  const [budgetRows] = await pool.query("SELECT id, montant FROM budget WHERE id = 1");
   if (budgetRows.length === 0) {
     await pool.query("INSERT INTO budget (id, montant) VALUES (1, 0)");
+  }
+
+  // Première installation de la colonne : aligne le budget individuel de
+  // chaque agent déjà accepté sur le montant de référence courant
+  if (budgetRestantAdded) {
+    const montantReference = budgetRows[0]?.montant ?? 0;
+    await pool.query(
+      "UPDATE accounts SET budget_restant = ? WHERE role = 'user' AND status = 'accepted'",
+      [montantReference]
+    );
   }
 
   // Notes de frais : ordres de mission et frais divers (les champs propres à
@@ -63,8 +77,27 @@ const initDb = async () => {
     )
   `);
 
+  // Messagerie interne entre RH et admin
+  await pool.query(`
+    CREATE TABLE IF NOT EXISTS messages (
+      id INT AUTO_INCREMENT PRIMARY KEY,
+      sender_id INT NOT NULL,
+      recipient_id INT NOT NULL,
+      subject VARCHAR(255) NOT NULL,
+      body TEXT NOT NULL,
+      attachment VARCHAR(255),
+      is_read TINYINT(1) NOT NULL DEFAULT 0,
+      created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+      FOREIGN KEY (sender_id) REFERENCES accounts(id),
+      FOREIGN KEY (recipient_id) REFERENCES accounts(id)
+    )
+  `);
+
   await seedAccount(process.env.ADMIN_EMAIL, process.env.ADMIN_PASSWORD, "admin");
-  await seedAccount(process.env.RH_EMAIL, process.env.RH_PASSWORD, "rh");
+  await seedAccount(process.env.RH_EMAIL, process.env.RH_PASSWORD, "rh", {
+    nom: process.env.RH_NOM,
+    prenom: process.env.RH_PRENOM,
+  });
 };
 
 const addColumnIfMissing = async (column, definition) => {
@@ -73,19 +106,20 @@ const addColumnIfMissing = async (column, definition) => {
      WHERE table_schema = ? AND table_name = 'accounts' AND column_name = ?`,
     [process.env.DB_NAME, column]
   );
-  if (rows[0].count > 0) return;
+  if (rows[0].count > 0) return false;
 
   await pool.query(`ALTER TABLE accounts ADD COLUMN ${column} ${definition}`);
+  return true;
 };
 
-const seedAccount = async (email, password, role) => {
+const seedAccount = async (email, password, role, { nom, prenom } = {}) => {
   const [rows] = await pool.query("SELECT id FROM accounts WHERE email = ?", [email]);
   if (rows.length > 0) return;
 
   const passwordHash = await bcrypt.hash(password, 10);
   await pool.query(
-    "INSERT INTO accounts (email, password_hash, role) VALUES (?, ?, ?)",
-    [email, passwordHash, role]
+    "INSERT INTO accounts (email, password_hash, role, nom, prenom) VALUES (?, ?, ?, ?, ?)",
+    [email, passwordHash, role, nom || null, prenom || null]
   );
   console.log(`Compte ${role} initialisé : ${email}`);
 };

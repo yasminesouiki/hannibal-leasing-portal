@@ -17,5 +17,10 @@ export default defineConfig([
       globals: globals.browser,
       parserOptions: { ecmaFeatures: { jsx: true } },
     },
+    rules: {
+      // Trop strict pour le pattern standard "fetch au montage" (setState
+      // après un await dans un useEffect), utilisé dans tout le projet.
+      'react-hooks/set-state-in-effect': 'off',
+    },
   },
 ])

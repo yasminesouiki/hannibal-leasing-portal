@@ -9,6 +9,9 @@ import AdminMessageriePage from "../pages/AdminMessageriePage";
 import UserLayout from "../components/UserLayout";
 import UserExpensesPage from "../pages/UserExpensesPage";
 import SettingsPage from "../pages/SettingsPage";
+import RhLayout from "../components/RhLayout";
+import RhExpensesPage from "../pages/RhExpensesPage";
+import RhMessageriePage from "../pages/RhMessageriePage";
 import { useAuth } from "../hooks/useAuth";
 
 const ProtectedRoute = ({ children, allowedRoles }) => {
@@ -24,12 +27,13 @@ const ProtectedRoute = ({ children, allowedRoles }) => {
 };
 
 // Redirige selon le rôle : les agents (user) vont vers leurs notes de frais,
-// les RH n'ont pas encore d'espace dédié.
+// les RH vers leur espace dédié.
 const DashboardRedirect = () => {
   const { role } = useAuth();
 
   if (role === "user") return <Navigate to="/user/expenses" replace />;
-  return <div>Page RH </div>;
+  if (role === "rh") return <Navigate to="/rh/expenses" replace />;
+  return <Navigate to="/login" replace />;
 };
 
 const AppRouter = () => {
@@ -60,6 +64,21 @@ const AppRouter = () => {
           <Route index element={<Navigate to="/user/expenses" replace />} />
           <Route path="expenses" element={<UserExpensesPage />} />
           <Route path="settings" element={<SettingsPage />} />
+        </Route>
+
+        <Route
+          path="/rh"
+          element={
+            <ProtectedRoute allowedRoles={["rh"]}>
+              <RhLayout />
+            </ProtectedRoute>
+          }
+        >
+          <Route index element={<Navigate to="/rh/expenses" replace />} />
+          <Route path="expenses" element={<Navigate to="/rh/expenses/pending" replace />} />
+          <Route path="expenses/:status" element={<RhExpensesPage />} />
+          <Route path="settings" element={<SettingsPage />} />
+          <Route path="messagerie" element={<RhMessageriePage />} />
         </Route>
 
         <Route

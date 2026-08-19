@@ -10,7 +10,7 @@ const EMPTY_LABEL = {
   rejected: "Aucune demande rejetée.",
 };
 
-const AdminExpensesList = ({ status }) => {
+const AdminExpensesList = ({ status, readOnly = false }) => {
   const [expenses, setExpenses] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
@@ -84,7 +84,7 @@ const AdminExpensesList = ({ status }) => {
                   <div className="expense-card-body">
                     <ExpenseDetails expense={expense} />
 
-                    {status === "pending" && (
+                    {!readOnly && status === "pending" && (
                       <div className="expense-card-actions">
                         <button
                           type="button"

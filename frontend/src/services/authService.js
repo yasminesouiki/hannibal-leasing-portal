@@ -70,11 +70,16 @@ export const getMe = async () => {
   return response.data; // { user }
 };
 
-export const updateProfile = async ({ nom, prenom, email, photoFile }) => {
+export const updateProfile = async ({ nom, prenom, email, telephone, lieu, poste, photoFile }) => {
   const formData = new FormData();
   formData.append("nom", nom);
   formData.append("prenom", prenom);
   formData.append("email", email);
+  formData.append("telephone", telephone || "");
+  formData.append("lieu", lieu || "");
+  if (poste !== undefined) {
+    formData.append("poste", poste);
+  }
   if (photoFile) {
     formData.append("photo", photoFile);
   }
@@ -115,6 +120,11 @@ export const updateUserStatus = async (id, status) => {
 
 export const getBudget = async () => {
   const response = await axios.get(`${SERVER_URL}/api/budget`, authHeader());
+  return response.data; // { montant }
+};
+
+export const getMyBudget = async () => {
+  const response = await axios.get(`${SERVER_URL}/api/budget/mine`, authHeader());
   return response.data; // { montant }
 };
 
@@ -160,5 +170,42 @@ export const updateExpenseStatus = async (id, status) => {
     { status },
     authHeader()
   );
+  return response.data;
+};
+
+// ---- MESSAGERIE (RH <-> admin) ----
+
+const MESSAGES_URL = `${SERVER_URL}/api/messages`;
+
+export const getMessageContacts = async () => {
+  const response = await axios.get(`${MESSAGES_URL}/contacts`, authHeader());
+  return response.data; // { contacts }
+};
+
+export const getInboxMessages = async () => {
+  const response = await axios.get(`${MESSAGES_URL}/inbox`, authHeader());
+  return response.data; // { messages }
+};
+
+export const getSentMessages = async () => {
+  const response = await axios.get(`${MESSAGES_URL}/sent`, authHeader());
+  return response.data; // { messages }
+};
+
+export const sendMessage = async ({ recipientId, subject, body, attachmentFile }) => {
+  const formData = new FormData();
+  formData.append("recipientId", recipientId);
+  formData.append("subject", subject);
+  formData.append("body", body);
+  if (attachmentFile) {
+    formData.append("attachment", attachmentFile);
+  }
+
+  const response = await axios.post(MESSAGES_URL, formData, authHeader());
+  return response.data;
+};
+
+export const markMessageRead = async (id) => {
+  const response = await axios.patch(`${MESSAGES_URL}/${id}/read`, {}, authHeader());
   return response.data;
 };

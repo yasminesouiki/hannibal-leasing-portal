@@ -88,7 +88,10 @@ const updateExpenseStatus = async (req, res) => {
   );
 
   if (status === "accepted") {
-    await pool.query("UPDATE budget SET montant = montant - ? WHERE id = 1", [expense.montant]);
+    await pool.query(
+      "UPDATE accounts SET budget_restant = budget_restant - ? WHERE id = ?",
+      [expense.montant, expense.user_id]
+    );
   }
 
   res.json({ message: "Statut mis à jour" });
